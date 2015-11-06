@@ -1,0 +1,24 @@
+{
+  "name": "litdown",
+  "version": "1.0.0",
+  "description": "literate programming in markdown",
+  "main": "index.js",
+  "bin": {
+    "litdown": "./bin/litdown.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qtfkwk/litdown.git"
+  },
+  "keywords": [
+    "literate programming",
+    "markdown"
+  ],
+  "author": "qtfkwk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qtfkwk/litdown/issues"
+  },
+  "homepage": "https://github.com/qtfkwk/litdown",
+  "preferGlobal": true
+}
