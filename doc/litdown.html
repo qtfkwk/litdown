@@ -1,0 +1,2310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	code{
+		background-color: #f0f0f0;
+		padding: 0px 2px;
+		border: 1px solid #c0c0c0;
+	}
+	pre code{
+		display: block;
+	}
+	pre{
+		tab-size: 4;
+		white-space: pre-wrap;
+	}
+	a{
+		text-decoration: none;
+	}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+<h1><a name="contents">Contents</a></h1>
+<ul>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#features">Features</a>
+<ul>
+<li><a href="#bidirectional-operation">Bidirectional operation</a></li>
+<li><a href="#multiple-markdown-processing-modules">Multiple Markdown processing modules</a></li>
+<li><a href="#non-executing">Non-executing</a></li>
+<li><a href="#self-hosting">Self-hosting</a></li>
+<li><a href="#table-of-contents">Table of contents</a></li>
+<li><a href="#templating">Templating</a></li>
+</ul>
+</li>
+<li><a href="#syntax">Syntax</a>
+<ul>
+<li><a href="#templates">Templates</a></li>
+<li><a href="#template-labels">Template labels</a></li>
+<li><a href="#embedded-files">Embedded files</a></li>
+<li><a href="#internal-links">Internal links</a></li>
+</ul>
+</li>
+<li><a href="#installation">Installation</a>
+<ul>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#npm">NPM</a></li>
+<li><a href="#git">Git</a></li>
+<li><a href="#archives">Archives</a></li>
+<li><a href="#building">Building</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#command-line">Command line</a></li>
+<li><a href="#browser">Browser</a></li>
+</ul>
+</li>
+<li><a href="#faq">FAQ</a></li>
+<li><a href="#demonstration">Demonstration</a>
+<ul>
+<li><a href="#gnu-autotools-build-system">GNU Autotools build system</a></li>
+<li><a href="#test-driven-development">Test-driven development</a></li>
+<li><a href="#demo-templates">Demo templates</a></li>
+<li><a href="#write-the-first-test">Write the first test</a></li>
+<li><a href="#build-the-first-test">Build the first test</a></li>
+<li><a href="#fail-the-first-test">Fail the first test</a></li>
+<li><a href="#pass-the-first-test">Pass the first test</a></li>
+<li><a href="#write-the-second-test">Write the second test</a></li>
+<li><a href="#build-and-run-the-second-test">Build and run the second test</a></li>
+<li><a href="#pass-the-second-test">Pass the second test</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li><a href="#core">Core</a>
+<ul>
+<li><a href="#core-file">Core file</a></li>
+<li><a href="#core-function">Core function</a></li>
+<li><a href="#core-options">Core options</a></li>
+<li><a href="#core-helper-functions">Core helper functions</a></li>
+<li><a href="#core-header">Core header</a></li>
+<li><a href="#core-footer">Core footer</a></li>
+</ul>
+</li>
+<li><a href="#cli">CLI</a>
+<ul>
+<li><a href="#cli-modules">CLI modules</a></li>
+<li><a href="#cli-configuration">CLI configuration</a></li>
+<li><a href="#cli-backend-detection">CLI backend detection</a></li>
+<li><a href="#cli-syntax-highlighter-detection">CLI syntax highlighter detection</a></li>
+<li><a href="#cli-usage">CLI usage</a></li>
+<li><a href="#cli-process-options">CLI process options</a></li>
+<li><a href="#cli-error-checking">CLI error checking</a></li>
+<li><a href="#cli-extract-mode">CLI extract mode</a></li>
+<li><a href="#cli-create-mode">CLI create mode</a></li>
+<li><a href="#cli-helper-functions">CLI helper functions</a></li>
+<li><a href="#cli-utility">CLI utility</a></li>
+</ul>
+</li>
+<li><a href="#backend-plugins">Backend plugins</a>
+<ul>
+<li><a href="#backend-plugin-header">Backend plugin header</a></li>
+<li><a href="#commonmark-backend">Commonmark backend</a></li>
+<li><a href="#markdown-it-backend">Markdown-it backend</a></li>
+<li><a href="#marked-backend">Marked backend</a></li>
+<li><a href="#backend-plugin-footer">Backend plugin footer</a></li>
+</ul>
+</li>
+<li><a href="#highlight-plugins">Highlight plugins</a>
+<ul>
+<li><a href="#highlight-plugin-header">Highlight plugin header</a></li>
+<li><a href="#highlightjs-cdn-highlight-plugin">Highlightjs CDN highlight plugin</a></li>
+<li><a href="#none-highlight-plugin">None highlight plugin</a></li>
+<li><a href="#highlight-plugin-footer">Highlight plugin footer</a></li>
+</ul>
+</li>
+<li><a href="#miscellaneous">Miscellaneous</a>
+<ul>
+<li><a href="#entry-point">Entry point</a></li>
+<li><a href="#make-file">Make file</a></li>
+<li><a href="#benchmarks">Benchmarks</a></li>
+<li><a href="#test-input">Test input</a></li>
+<li><a href="#demo-script">Demo script</a></li>
+</ul>
+</li>
+<li><a href="#files">Files</a>
+<ul>
+<li><a href="#embedded">Embedded</a></li>
+<li><a href="#resulting">Resulting</a></li>
+</ul>
+</li>
+<li><a href="#figures">Figures</a>
+<ul>
+<li><a href="#logical-diagram">Logical diagram</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+<li><a href="#to-do">To do</a></li>
+</ul>
+<h1><a name="purpose">Purpose</a> <a href="#contents">^</a></h1>
+<p>Litdown is a literate programming tool that processes Markdown input into both
+documentation formats and extracts files embedded in the Markdown.
+Litdown can also be used to convert an existing project into Markdown source.
+Litdown is completely agnostic regarding programming languages, file formats,
+build systems, and version control systems.</p>
+<p><img src="fig/logical-diagram.png" alt="Logical diagram" /></p>
+<h1><a name="features">Features</a> <a href="#contents">^</a></h1>
+<h2><a name="bidirectional-operation">Bidirectional operation</a> <a href="#contents">^</a></h2>
+<p>Litdown operates in either extract or create mode.
+Extract mode converts literate Markdown source into generated documentation and
+files.
+Create mode is effectively the opposite of extract mode (although the round
+trip is lossy) and is intended to assist converting an existing project into
+literate Markdown source.</p>
+<h2><a name="multiple-markdown-processing-modules">Multiple Markdown processing modules</a> <a href="#contents">^</a></h2>
+<p>Litdown currently supports using the <a href="https://www.npmjs.com/packages/commonmark">Commonmark</a>,
+<a href="https://www.npmjs.com/packages/markdown-it">Markdown-it</a>, and <a href="https://www.npmjs.com/packages/marked">Marked</a> NPM modules to process
+literate Markdown source.
+Litdown does not intend to perform this step itself and this alows the user to
+determine which Markdown backend to use.</p>
+<p>Litdown tries to be smart about which backend to use by checking available
+backend plugins, installed modules, the user's list of preferred backends, and
+a default list of preferred backends to determine which to use.
+The <code>-b</code> and <code>-B</code> options can be used to modify and/or view this process.
+See the <a href="#usage">Usage</a> section for details.</p>
+<p>Supporting a new or different backend module is as simple as creating a plugin.
+For details, see the <a href="#backend-plugins">Backend plugins</a> section.</p>
+<h2><a name="non-executing">Non-executing</a> <a href="#contents">^</a></h2>
+<p>Litdown only creates files inside a previously non-existing directory under the
+current working directory.
+It never executes any embedded Javascript or system commands found in the
+literate Markdown source.
+This eliminates a bunch of potential security problems and places the
+responsibility and trust where it should be: between the developer and the
+user.
+If additional processing or compiling steps are required in your project, you
+should develop it in the form of a Makefile, script, or use a build system to
+perform it.</p>
+<p>Litdown uses a <a href="#makefile">Makefile</a> to perform processing within its own
+source directory and a <a href="#bin-build-sh">build script</a> to perform steps that the
+Makefile cannot.</p>
+<h2><a name="self-hosting">Self-hosting</a> <a href="#contents">^</a></h2>
+<p>Litdown (re)builds itself from the <a href="../litdown.md">litdown.md</a> file via the
+<a href="#bin-build-sh">build script</a>.</p>
+<h2><a name="table-of-contents">Table of contents</a> <a href="#contents">^</a></h2>
+<p>Litdown generates anchored headers and a linked table of contents from the
+headers in the literate Markdown source.
+The TOC is prepended to the source to create the README.md file, which is used
+to create the other documentation formats.
+Each header must be <em>unique</em> in order for the links to work properly.
+Anchor names are normalized versions of the headers and are inserted into the
+HTML.
+Authors may also leverage anchored headers to create cross-references in the
+form of <a href="#internal-links">internal links</a>.</p>
+<h2><a name="templating">Templating</a> <a href="#contents">^</a></h2>
+<p>Litdown encourages the use of templates, which allow for content to be defined
+in one place and be embedded in multiple files or in multiple places in a file.
+See the <a href="#templates">template</a> and <a href="#template-labels">template label</a> syntax
+for more details.</p>
+<h1><a name="syntax">Syntax</a> <a href="#contents">^</a></h1>
+<p>Litdown source is Markdown with a few specific conventions that facilitate its
+use as a literate programming tool.</p>
+<h2><a name="templates">Templates</a> <a href="#contents">^</a></h2>
+<p>A template consists of a header with a unique name which also contains at least
+one code block.</p>
+<pre><code class="lang-markdown"># Template name
+
+```
+Contents
+```
+</code></pre>
+<h2><a name="template-labels">Template labels</a> <a href="#contents">^</a></h2>
+<p>Templates are transcluded into one or more templates by the use of a template
+label inside the destination template.
+The following would transclude the &quot;Template name&quot; template into the &quot;Template
+labels&quot; template.</p>
+<pre><code class="nohighlight">_&quot;Template name&quot;
+</code></pre>
+<h3><a name="notes-about-template-labels">Notes about template labels</a> <a href="#contents">^</a></h3>
+<ol>
+<li>If a template with the name given in the template label is not defined in
+the document, the template label is left as-is.</li>
+<li>Templates may contain successive template labels, but should never have a
+circular reference, as this would result in an infinite loop.</li>
+</ol>
+<h2><a name="embedded-files">Embedded files</a> <a href="#contents">^</a></h2>
+<p>Files are templates with an associated file directive.
+The file directive is a special type of link with 2 requirements:</p>
+<ul>
+<li>Link target begins with '#'</li>
+<li>Link title begins with 'save:'</li>
+</ul>
+<p>A file directive results in an <a href="#internal-links">internal link</a> to the section
+and directs Litdown to create the file under the given path with the contents
+after resolving all <a href="#template-labels">template labels</a>.</p>
+<p>Standard Markdown link syntax is:</p>
+<pre><code class="lang-markdown">[text](href &quot;title&quot;)
+</code></pre>
+<p>Litdown file directive syntax is:</p>
+<pre><code class="lang-markdown">[text](#path/to/file.ext &quot;save:mode&quot;)
+</code></pre>
+<p>If the mode is omitted, and the title is just <code>&quot;save:&quot;</code>, the default is 644
+(<code>rw-r--r--</code>).</p>
+<p>Although the 'text' field can be anything, a good default is to make it the
+same as the 'href' field, except without the leading '#':</p>
+<pre><code class="lang-markdown">[path/to/file.ext](#path/to/file.ext &quot;save:mode&quot;)
+</code></pre>
+<h2><a name="internal-links">Internal links</a> <a href="#contents">^</a></h2>
+<p>Internal links are links to section headers in the same document.
+Note that the 'href' field starts with a '#'.</p>
+<pre><code class="lang-markdown">[text](#normalized-header-text &quot;optional title&quot;)
+</code></pre>
+<h1><a name="installation">Installation</a> <a href="#contents">^</a></h1>
+<h2><a name="dependencies">Dependencies</a> <a href="#contents">^</a></h2>
+<p>Litdown depends on <a href="https://nodejs.org">Node.js</a>.</p>
+<h2><a name="npm">NPM</a> <a href="#contents">^</a></h2>
+<p>The official way to install Litdown is with <a href="https://www.npmjs.com">NPM</a>.</p>
+<pre><code class="lang-bash">npm install -g litdown
+</code></pre>
+<p>Be sure to also install at least one of the supported backend modules:</p>
+<ul>
+<li><a href="https://www.npmjs.com/packages/commonmark">Commonmark</a></li>
+<li><a href="https://www.npmjs.com/packages/markdown-it">Markdown-it</a></li>
+<li><a href="https://www.npmjs.com/packages/marked">Marked</a></li>
+</ul>
+<h2><a name="git">Git</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-bash">git clone https://github.com/qtfk/litdown
+</code></pre>
+<h2><a name="archives">Archives</a> <a href="#contents">^</a></h2>
+<p>The following archive files are created automatically by the
+<a href="#bin-build-sh">build script</a>.</p>
+<ul>
+<li><a href="../archives/litdown.tbz" title="Extract via 'tar xjf litdown.tbz'.">litdown.tbz</a></li>
+<li><a href="../archives/litdown.tgz" title="Extract via 'tar xzf litdown.tgz'.">litdown.tgz</a></li>
+<li><a href="../archives/litdown.zip" title="Extract via 'unzip litdown.zip'.">litdown.zip</a></li>
+</ul>
+<h2><a name="building">Building</a> <a href="#contents">^</a></h2>
+<p>Building Litdown isn't strictly necessary since everything is already built in
+the Git repository and the archives.
+However, you are welcome to rebuild it yourself.
+The build process uses a <a href="#bin-build-sh">build script</a>, which in turn uses the
+embedded <a href="#makefile">Makefile</a>.
+The files that are generated by this process are listed in the
+<a href="#resulting">Resulting</a> section.</p>
+<h3><a name="build-dependencies">Build dependencies</a> <a href="#contents">^</a></h3>
+<ul>
+<li><a href="https://www.npmjs.com/package/uglifyjs" title="UglifyJS">UglifyJS</a></li>
+<li><a href="http://pandoc.org" title="Pandoc">Pandoc</a></li>
+</ul>
+<h3><a name="bin-build-sh">bin/build.sh</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-bash">#!/bin/sh
+
+set -eo pipefail # exit on first failed command
+n=litdown
+cd $(dirname $0)/..
+
+echo Running Litdown against $n.md
+bin/$n.js -l $n.md
+echo
+
+echo Processing $n/Makefile
+make -C $n
+echo
+
+echo Rearranging files
+mv $n/$n.html $n/doc/
+mkdir $n/log
+mv $n/$n.json $n/log/
+echo
+
+echo Creating archives
+rm -rf archives
+mkdir archives
+tar cjf archives/$n.tbz $n
+tar czf archives/$n.tgz $n
+zip -qr archives/$n.zip $n
+echo
+
+echo Replacing current files
+rm -rf bin demo doc lib log t
+mv $n/* .
+rmdir $n
+echo
+</code></pre>
+<h1><a name="usage">Usage</a> <a href="#contents">^</a></h1>
+<h2><a name="command-line">Command line</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-markdown"># Usage
+
+```
+litdown -x [options] file
+litdown -c [options] directory
+```
+
+# Options
+
+```
+-h, --help   Show usage
+-v           Increase verbosity
+-q           Disable output
+```
+
+## Mode options
+
+```
+-x   Extract a Markdown file to a directory (default)
+-c   Create a Markdown file from files in directory
+```
+
+## Extract options
+
+```
+-l               Save internal state to &quot;litdown.json&quot;
+-b name[,name]   Preferred backend(s) (default: commonmark,marked,markdown-it)
+-B               Show backend selection (use after -b to check)
+-s name[,name]   Preferred syntax highlighter (default: highlightjs-cdn,none)
+-S               Show syntax highlighter selection (use after -s to check)
+```
+</code></pre>
+<h2><a name="browser">Browser</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-html">&lt;html&gt;
+&lt;head&gt;
+&lt;script src=&quot;marked.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;litdown.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;window.onload = function() {
+	document.getElementById('litdown').innerHTML =
+		litdown(src, {backend:'marked'}).html;
+}&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id='litdown'&gt;&lt;/div&gt;
+&lt;/body&gt;
+</code></pre>
+<h1><a name="faq">FAQ</a> <a href="#contents">^</a></h1>
+<ol>
+<li>
+<p>Why does the <a href="#cli-utility">CLI utility</a> print the filenames in a seemingly
+&quot;random&quot; order?</p>
+<p>Litdown creates the files in the same order that the file directives appear
+in the literate Markdown source, but in a non-blocking, asynchronous
+manner.
+Litdown prints each filename when the file has been successfully written.</p>
+</li>
+<li>
+<p>Why doesn't Litdown support running code embedded in the literate Markdown
+source?</p>
+<p>Read the <a href="#non-executing">Non-executing</a> section.</p>
+</li>
+</ol>
+<h1><a name="demonstration">Demonstration</a> <a href="#contents">^</a></h1>
+<h2><a name="gnu-autotools-build-system">GNU Autotools build system</a> <a href="#contents">^</a></h2>
+<p>This example uses the <a href="https://en.wikipedia.org/wiki/GNU_build_system">GNU build system</a>, which has two major parts.
+The first part involves generating a &quot;distribution&quot;, which to a user is
+normally an archive (gzipped tar file) containing the source code and necessary
+build system files, and requires the &quot;autoconf&quot; and &quot;automake&quot; tools.
+The second part uses the distribution to extract, compile and install the
+software, and requires a compiler (&quot;gcc&quot;, &quot;clang&quot;, ...) and the &quot;make&quot; tool.</p>
+<p>The following steps should help you install these tools if your system does not
+already have them.</p>
+<ol>
+<li>
+<p>Install automake (and autoconf) to build the distribution.
+Since automake normally depends on autoconf in most package managers, it is
+not usually necessary to specify autoconf in the install command.</p>
+<ul>
+<li>Mac OSX + Homebrew: <code>brew install automake</code></li>
+<li>Debian/Ubuntu: <code>apt-get install automake</code></li>
+</ul>
+</li>
+<li>
+<p>Install a compiler and the &quot;make&quot; tool.</p>
+<ul>
+<li>Mac OSX: <code>xcode-select --install</code></li>
+<li>Debian/Ubuntu: <code>apt-get install build-essential</code></li>
+</ul>
+</li>
+</ol>
+<h2><a name="test-driven-development">Test-driven development</a> <a href="#contents">^</a></h2>
+<p>This example uses a <a href="https://en.wikipedia.org/wiki/Test-driven_development">test-driven development</a> methodology, so each
+iteration involves the creation of a test and minimal build system files to get
+the test to compile and run.
+The first time each test runs, it should fail.
+Then the minimal amount of code is written so that the test succeeds.
+Each iteration is contained within a separate numbered directory to allow
+extracting the project at various stages without the use of a version control
+system.
+The example uses templates as a means to reduce repeating code between the
+iterations.</p>
+<h2><a name="demo-templates">Demo templates</a> <a href="#contents">^</a></h2>
+<p>As discussed in the <a href="#templates">Templates</a> section, templates enable reusing
+specific strings throughout one or more of the source code files but are not
+necessarily written to any file.
+It can be quite useful to put certain information in a template so that it is
+easy to find, change, or document.
+It also supports the &quot;Don't Repeat Yourself&quot; (DRY) concept.
+For example, the <a href="#version">Version</a> template allows including the &quot;1.0&quot; string
+into any source code file.
+Both of these templates below are included in the
+<a href="#demo-1-configure-ac">demo/1/configure.ac file</a> file below.</p>
+<h3><a name="version">Version</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">1.0
+</code></pre>
+<h3><a name="email-address">Email address</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">hello@hello.com
+</code></pre>
+<h2><a name="write-the-first-test">Write the first test</a> <a href="#contents">^</a></h2>
+<p>Given that we want to generate numbered iterations of each step in our
+development process, the files for this first step will be saved under the
+&quot;demo/1&quot; directory.
+In a regular project, it would probably be better to use a version control
+system (like Git) instead to save each iteration.</p>
+<p>The &quot;src&quot; subdirectory will contain the source code files.
+Source code tests will go in files under the &quot;src/t&quot; subdirectory.
+Our tests will go in a C source file at &quot;src/t/hello.c&quot;.</p>
+<p>In order to instruct Litdown to create this structure and the C source code
+file for the test, we use standard Markdown link syntax:
+<code>[text](href &quot;title&quot;)</code>.
+However for Litdown to recognize it as a directive to create the file, the
+href must begin with &quot;#&quot; and the title must begin with &quot;save:&quot;.
+The &quot;text&quot; field becomes the hyperlink text.
+The &quot;href&quot; field is converted into a local link to the heading with the same
+name.
+The &quot;title&quot; field is used to pass parameters to Litdown, but is ignored in the
+woven output.
+For example, the format used for our test's C source code file is
+<code>[demo/1/src/t/hello.c](#demo/1/src/t/hello.c &quot;save:&quot;)</code>.</p>
+<h3><a name="demo-1-src-t-hello-c">demo/1/src/t/hello.c</a> <a href="#contents">^</a></h3>
+<p>Our test includes some header files and a main function.
+In this case, template labels are used to have Litdown fetch the actual
+contents from other sections.
+Two template labels are used here: &quot;demo/1/src/t/hello.c includes&quot; and
+&quot;demo/1/src/t/hello.c main body&quot;.
+Note that the labels may be anything you want, but they should uniquely
+reference a specific section.
+This is why the full path is used in these labels.</p>
+<pre><code class="lang-c">_&quot;demo/1/src/t/hello.c includes&quot;
+
+int main ()
+{
+_&quot;demo/1/src/t/hello.c main function body&quot;
+}
+</code></pre>
+<h3><a name="demo-1-src-t-hello-c-main-function-body">demo/1/src/t/hello.c main function body</a> <a href="#contents">^</a></h3>
+<p>The body of the main function requires a few variables to run the test, the
+test itself will be to run the currently nonexistent &quot;src/hello&quot; executable,
+perform any housekeeping steps, and prove that it runs successfully.</p>
+<p>As you can see, the source of the main function body uses four more template
+labels.
+One of the benefits of the literate programming approach is that the source
+code can be broken into separate logical sections in a manner that supports
+human understanding.</p>
+<pre><code class="lang-c">_&quot;demo/1/src/t/hello.c variables&quot;
+_&quot;demo/1/src/t/hello.c run the command&quot;
+_&quot;demo/1/src/t/hello.c clean up&quot;
+_&quot;demo/1/src/t/hello.c prove successful&quot;
+</code></pre>
+<h3><a name="demo-1-src-t-hello-c-variables">demo/1/src/t/hello.c variables</a> <a href="#contents">^</a></h3>
+<p>We'll save the command to be run in a string called &quot;command&quot;.
+Note that the test will be run from the &quot;src&quot; directory and that we do not want
+to run some global &quot;hello&quot; executable, so we prepend &quot;./&quot; to the command.</p>
+<pre><code class="lang-c">	char *command = &quot;./hello&quot;;
+</code></pre>
+<h3><a name="demo-1-src-t-hello-c-run-the-command">demo/1/src/t/hello.c run the command</a> <a href="#contents">^</a></h3>
+<p>The popen function from the stdio.h header file is perfect for running another
+command and reading its output.
+Here we save the returned file pointer as &quot;fp&quot;.</p>
+<pre><code class="lang-c">	FILE *fp = popen (command, &quot;r&quot;);
+</code></pre>
+<h3><a name="demo-1-src-t-hello-c-clean-up">demo/1/src/t/hello.c clean up</a> <a href="#contents">^</a></h3>
+<p>We appropriately clean up by closing the &quot;fp&quot; file pointer and save the
+returned exit code to test whether the command ran successfully.
+We shift the returned exit code by 8 bits to get the actual exit value.</p>
+<pre><code class="lang-c">	int e = pclose (fp) &gt;&gt; 8;
+</code></pre>
+<h3><a name="demo-1-src-t-hello-c-prove-successful">demo/1/src/t/hello.c prove successful</a> <a href="#contents">^</a></h3>
+<p>This assertion tests if the exit code was zero, which indicates that it ran
+successfully.
+However, since the &quot;src/hello&quot; executable doesn't exist yet (because its source
+doesn't even exist yet), it can't possibly be run.
+So we expect the assertion to fail.</p>
+<pre><code class="lang-c">	assert(e == 0);
+</code></pre>
+<h3><a name="demo-1-src-t-hello-c-includes">demo/1/src/t/hello.c includes</a> <a href="#contents">^</a></h3>
+<p>This section demonstrates that the headings may be presented in any order
+desired by the author.</p>
+<p>We used several functions that require the appropriate header files to be
+included from the standard library.
+The &quot;stdio.h&quot; header file provides declarations for the popen and pclose
+functions.
+The &quot;assert.h&quot; header file provides a declaration for the &quot;assert&quot; function.</p>
+<pre><code class="lang-c">#include &lt;stdio.h&gt;
+#include &lt;assert.h&gt;
+</code></pre>
+<h2><a name="build-the-first-test">Build the first test</a> <a href="#contents">^</a></h2>
+<p>Now that our first test is complete, we need to instruct the build system how
+to compile and run the test.
+The following three files get it done.</p>
+<ul>
+<li><a href="#demo-1-src-makefile-am">demo/1/src/Makefile.am</a></li>
+<li><a href="#demo-1-makefile-am">demo/1/Makefile.am</a></li>
+<li><a href="#demo-1-configure-ac">demo/1/configure.ac</a></li>
+</ul>
+<h3><a name="demo-1-src-makefile-am">demo/1/src/Makefile.am</a> <a href="#contents">^</a></h3>
+<p>To inform the build system that we have a test and that we want to compile it
+and run it when we execute the <code>make check</code> command, we place the following
+contents in the &quot;src/Makefile.am&quot; file.
+The executables listed for &quot;check_PROGRAMS&quot; are compiled when <code>make check</code>
+runs.
+The executables listed for &quot;TESTS&quot; are ran when <code>make check</code> runs.
+The test is considered to have passed if the test executable exits with an exit
+code of 0; otherwise the test failed.
+The assert function aborts and returns non-zero if the test fails.
+The GNU build system provides metrics on the outcome of the testing.
+The files listed for &quot;EXTRA_DIST&quot; are added to the distribution when
+<code>make dist</code> is run.
+The distribution is a gzipped tarball that is suitable for distributing a
+project's source code to others.
+It is better to share the distribution, because it automatically packages up
+all of the files needed to easily compile and install the source code with the
+familiar <code>./configure &amp;&amp; make &amp;&amp; sudo make install</code> commands.
+Also it alleviates the &quot;user&quot; from installing automake and autoconf in order to
+generate the configure script.</p>
+<pre><code class="lang-makefile">check_PROGRAMS = t/hello
+TESTS = $(check_PROGRAMS)
+EXTRA_DIST = t/hello.c
+</code></pre>
+<h3><a name="demo-1-makefile-am">demo/1/Makefile.am</a> <a href="#contents">^</a></h3>
+<p>In the project root directory, we also need a Makefile.am file which merely
+informs the build system to run <code>make</code> inside the &quot;src&quot; subdirectory.</p>
+<pre><code class="lang-makefile">SUBDIRS = src
+</code></pre>
+<h3><a name="demo-1-configure-ac">demo/1/configure.ac</a> <a href="#contents">^</a></h3>
+<p>It is possible to use the <code>autoscan</code> command to generate a &quot;configure.scan&quot;
+file which serves as a template for the &quot;configure.ac&quot; file.
+In this case, we will just create the &quot;configure.ac&quot; file ourselves.
+Regardless of how the &quot;configure.ac&quot; file is created, it is used by the
+<code>autoreconf -vi</code> command as a template to generate the configure script.</p>
+<p>The following list addresses each line in the contents below:</p>
+<ol>
+<li>Defines the minimum version of autoconf to use.</li>
+<li>Initializes autoconf and defines a name, version number and email address
+for the project.
+Note that we use the template labels for the &quot;Version&quot; and &quot;Email address&quot;
+fields.</li>
+<li>Initializes automake with the following options:
+<ul>
+<li>&quot;foreign&quot;: Don't require standard GNU project files</li>
+<li>&quot;subdir-objects&quot;: Enable the &quot;src/Makefile.am&quot; to address the tests in
+	  the &quot;t&quot; subdirectory</li>
+<li>&quot;-Wall -Werror&quot;: Enable compiler warnings</li>
+</ul>
+</li>
+<li>Generate the specified Makefiles</li>
+<li>Define where the source code is located</li>
+<li>Ensure that the specified header files are available on the user's system</li>
+<li>Check that the C compiler is available</li>
+<li>Check that the compiler can compile the C programming language</li>
+<li>Create the &quot;configure&quot; script and any other necessary files</li>
+</ol>
+<pre><code class="nohighlight">AC_PREREQ([2.69])
+AC_INIT([Hello], [_&quot;Version&quot;], [_&quot;Email address&quot;])
+AM_INIT_AUTOMAKE([foreign subdir-objects -Wall -Werror])
+AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_SRCDIR([src])
+AC_CHECK_HEADERS([stdio.h assert.h])
+AC_PROG_CC
+AC_LANG_C
+AC_OUTPUT
+</code></pre>
+<h2><a name="fail-the-first-test">Fail the first test</a> <a href="#contents">^</a></h2>
+<p>If you haven't run Litdown against the &quot;litdown.md&quot; file yet, you can do so
+now via &quot;litdown litdown.md&quot;.
+This should produce the &quot;litdown&quot; directory in the current directory.
+Then run the following commands to generate and run the configure script, and
+run the test.</p>
+<pre><code class="nohighlight">cd litdown/demo/1
+autoreconf -vi
+./configure
+make check
+</code></pre>
+<p>The <code>make check</code> output clearly indicates a failed test.</p>
+<pre><code class="nohighlight">FAIL: t/hello
+============================================================================
+Testsuite summary for Hello 1.0
+============================================================================
+# TOTAL: 1
+# PASS:  0
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  1
+# XPASS: 0
+# ERROR: 0
+============================================================================
+See src/test-suite.log
+Please report to hello@hello.com
+============================================================================
+make[3]: *** [test-suite.log] Error 1
+make[2]: *** [check-TESTS] Error 2
+make[1]: *** [check-am] Error 2
+make: *** [check-recursive] Error 1
+</code></pre>
+<p>To investigate, we look at the contents in &quot;src/test-suite.log&quot;:</p>
+<pre><code class="nohighlight">===================================
+   Hello 1.0: src/test-suite.log
+===================================
+
+# TOTAL: 1
+# PASS:  0
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  1
+# XPASS: 0
+# ERROR: 0
+
+.. contents:: :depth: 2
+
+FAIL: t/hello
+=============
+
+sh: ./hello: No such file or directory
+Assertion failed: (e == 0), function main, file t/hello.c, line 9.
+FAIL t/hello (exit status: 134)
+</code></pre>
+<p>Note the last 3 lines which state that the &quot;./hello&quot; file doesn't exist, and
+that the &quot;e == 0&quot; assertion failed.</p>
+<h2><a name="pass-the-first-test">Pass the first test</a> <a href="#contents">^</a></h2>
+<p>Now we write the minimal code needed to pass the
+<a href="#demo-1-src-t-hello-c-prove-successful">first test</a>.
+This requires one new file, &quot;src/hello.c&quot;, and one modification to the
+&quot;src/Makefile.am&quot; file.</p>
+<p>The rest of the files from the previous step are still needed but do not
+require any changes.
+These files just use a template label to pull the content from the previous
+step.</p>
+<h3><a name="demo-2-src-hello-c">demo/2/src/hello.c</a> <a href="#contents">^</a></h3>
+<p>This is the minimal source for an executable that does nothing except run and
+exit with zero.</p>
+<pre><code class="lang-c">int main () {}
+</code></pre>
+<h3><a name="demo-2-src-makefile-am">demo/2/src/Makefile.am</a> <a href="#contents">^</a></h3>
+<p>In order to instruct the build system to compile the new source file, we need
+to append a line to the &quot;src/Makefile.am&quot; file.
+Normally you might also see another line like &quot;hello_SOURCES = hello.c&quot;, but
+this is not strictly necessary because make is smart enough to deduce that that
+the source for the &quot;src/hello&quot; executable is the &quot;src/hello.c&quot; file.
+Note that we have included the previous contents with a template label.</p>
+<pre><code class="lang-makefile">_&quot;demo/1/src/Makefile.am&quot;
+bin_PROGRAMS = hello
+</code></pre>
+<h3><a name="demo-2-src-t-hello-c">demo/2/src/t/hello.c</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-c">_&quot;demo/1/src/t/hello.c&quot;
+</code></pre>
+<h3><a name="demo-2-makefile-am">demo/2/Makefile.am</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">_&quot;demo/1/Makefile.am&quot;
+</code></pre>
+<h3><a name="demo-2-configure-ac">demo/2/configure.ac</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;demo/1/configure.ac&quot;
+</code></pre>
+<h3><a name="build-and-run-the-first-test-again">Build and run the first test again</a> <a href="#contents">^</a></h3>
+<p>Run the following commands to observe the first test passing.</p>
+<pre><code class="nohighlight">cd litdown/demo/2
+autoreconf -vi
+./configure
+make check
+</code></pre>
+<p>The <code>make check</code> output clearly indicates a passed test.</p>
+<pre><code class="nohighlight">PASS: t/hello
+============================================================================
+Testsuite summary for Hello 1.0
+============================================================================
+# TOTAL: 1
+# PASS:  1
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[1]: Nothing to be done for `check-am'.
+</code></pre>
+<h2><a name="write-the-second-test">Write the second test</a> <a href="#contents">^</a></h2>
+<p>So the first test really doesn't <em>do</em> anything, but it does get our entire
+project going.
+The next step is to get it to print &quot;Hello!&quot; to the screen.
+We start by inserting the second test to read the output between the calls to
+popen and pclose in the existing <a href="#demo-3-src-t-hello-c">src/t/hello.c</a>
+file.
+The rest of the files remain the same.</p>
+<h3><a name="demo-3-src-t-hello-c">demo/3/src/t/hello.c</a> <a href="#contents">^</a></h3>
+<p>This file shares the same structure, but we change the main body template label
+and we will have to include another header file.</p>
+<pre><code class="lang-c">_&quot;demo/3/src/t/hello.c includes&quot;
+
+int main ()
+{
+_&quot;demo/3/src/t/hello.c main body&quot;
+}
+</code></pre>
+<h3><a name="demo-3-src-t-hello-c-main-body">demo/3/src/t/hello.c main body</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-c">_&quot;demo/1/src/t/hello.c variables&quot;
+_&quot;demo/1/src/t/hello.c run the command&quot;
+_&quot;demo/3/src/t/hello.c test the output&quot;
+_&quot;demo/1/src/t/hello.c clean up&quot;
+_&quot;demo/1/src/t/hello.c prove successful&quot;
+</code></pre>
+<h3><a name="demo-3-src-t-hello-c-test-the-output">demo/3/src/t/hello.c test the output</a> <a href="#contents">^</a></h3>
+<p>The first test already proves that the executable exists and runs it via popen
+so that we can read its output.
+The second test should prove that the &quot;src/hello&quot; executable actually prints
+&quot;Hello!&quot; to STDOUT.
+This test establishes that the required output is &quot;Hello!&quot; followed by a
+newline and saves it in the expected variable.
+The match boolean represents whether the two strings match.</p>
+<p>Each iteration of the loop compares the character read from the output, saved
+in the c char, to the same character in the expected string and saves that
+result to the match boolean.
+The loop starts with index integer i set to zero.
+It continues as long as all the characters read so far match, it hasn't reached
+end of file on the output, and we haven't reached the end of the expected
+string.
+At the end of each iteration, the next character is read from the output and
+the index i is incremented.</p>
+<p>After the loop completes, if the output matched the expected string, two
+statements should be true:
+First, the index i should be equal to the length of the expected string.
+In other words, the entire expected string was compared.
+Second, the match boolean should still be true.
+If either of these conditions is false, then the output did not match the
+expected string.</p>
+<p>As an aside, we could have placed both conditions inside a single assert, i.e.
+<code>assert (i == len &amp;&amp; match);</code>.
+However it is preferred to use separate asserts so that we can tell which one
+failed.</p>
+<p>Of course there are many possible algorithms to have tested this situation.
+This approach was chosen to minimize memory usage and be easy to understand,
+but it is not necessarily the most performant.</p>
+<pre><code class="lang-c">	char *expected = &quot;Hello!\n&quot;;	
+	bool match = true;
+	int i;
+	char c = fgetc (fp);
+	int len = strlen (expected);
+	for (i = 0; match &amp;&amp; c != EOF &amp;&amp; i &lt; len; i++)
+	{
+		match = c == expected[i];
+		c = fgetc (fp);
+	}
+	assert (i == len);
+	assert (match);
+</code></pre>
+<h3><a name="demo-3-src-t-hello-c-includes">demo/3/src/t/hello.c includes</a> <a href="#contents">^</a></h3>
+<p>The <a href="#demo-3-src-t-hello-c-test-the-output">test the output</a> code uses the
+strlen function and the bool type which requires that we include the string.h
+and stdbool.h header files, respectively.</p>
+<pre><code class="lang-c">_&quot;demo/1/src/t/hello.c includes&quot;
+#include &lt;string.h&gt;
+#include &lt;stdbool.h&gt;
+</code></pre>
+<h3><a name="demo-3-src-hello-c">demo/3/src/hello.c</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-c">_&quot;demo/2/src/hello.c&quot;
+</code></pre>
+<h3><a name="demo-3-src-makefile-am">demo/3/src/Makefile.am</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">_&quot;demo/2/src/Makefile.am&quot;
+</code></pre>
+<h3><a name="demo-3-makefile-am">demo/3/Makefile.am</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">_&quot;demo/2/Makefile.am&quot;
+</code></pre>
+<h3><a name="demo-3-configure-ac">demo/3/configure.ac</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;demo/2/configure.ac&quot;
+</code></pre>
+<h2><a name="build-and-run-the-second-test">Build and run the second test</a> <a href="#contents">^</a></h2>
+<p>We can run the second test, which we again expect to fail initially, by running
+<code>autoreconf -vi; ./configure; make check</code>.
+The output of <code>make check</code> clearly indicates a failure.</p>
+<pre><code class="nohighlight">FAIL: t/hello
+============================================================================
+Testsuite summary for Hello 1.0
+============================================================================
+# TOTAL: 1
+# PASS:  0
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  1
+# XPASS: 0
+# ERROR: 0
+============================================================================
+See src/test-suite.log
+Please report to hello@hello.com
+============================================================================
+make[3]: *** [test-suite.log] Error 1
+make[2]: *** [check-TESTS] Error 2
+make[1]: *** [check-am] Error 2
+make: *** [check-recursive] Error 1
+</code></pre>
+<p>The &quot;src/test-suite.log&quot; file specifies that the failing assertion was
+<code>i == len</code>.
+This makes sense because it appears first and we can expect the loop to
+terminate immediately since the first character from the output is the end of
+file because there is no output yet.</p>
+<pre><code class="nohighlight">Assertion failed: (i == len), function main, file t/hello.c, line 20.
+</code></pre>
+<h2><a name="pass-the-second-test">Pass the second test</a> <a href="#contents">^</a></h2>
+<p>To pass the second test, we need only to change the
+<a href="#demo-4-src-t-hello-c">src/t/hello.c</a> file, replacing it with code that
+actually prints &quot;Hello!&quot; to STDOUT.
+The rest of the files remain the same.</p>
+<h3><a name="demo-4-src-hello-c">demo/4/src/hello.c</a> <a href="#contents">^</a></h3>
+<p>The below is the minimal code that prints &quot;Hello!&quot; and a newline to STDOUT.
+The puts function prints a string and appends a newline, and is provided by the
+stdio.h header file.</p>
+<pre><code class="lang-c">#include &lt;stdio.h&gt;
+
+int main ()
+{
+	puts (&quot;Hello!&quot;);
+}
+</code></pre>
+<h3><a name="demo-4-src-t-hello-c">demo/4/src/t/hello.c</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-c">_&quot;demo/3/src/t/hello.c&quot;
+</code></pre>
+<h3><a name="demo-4-src-makefile-am">demo/4/src/Makefile.am</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">_&quot;demo/2/src/Makefile.am&quot;
+</code></pre>
+<h3><a name="demo-4-makefile-am">demo/4/Makefile.am</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">_&quot;demo/3/Makefile.am&quot;
+</code></pre>
+<h3><a name="demo-4-configure-ac">demo/4/configure.ac</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;demo/3/configure.ac&quot;
+</code></pre>
+<h3><a name="build-and-run-the-second-test-again">Build and run the second test again</a> <a href="#contents">^</a></h3>
+<p>Now the <code>make check</code> output shows a pass!</p>
+<pre><code class="nohighlight">PASS: t/hello
+============================================================================
+Testsuite summary for Hello 1.0
+============================================================================
+# TOTAL: 1
+# PASS:  1
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[1]: Nothing to be done for `check-am'.
+</code></pre>
+<p>We can further prove to ourselves that the program works by changing into the
+&quot;demo/4/src&quot; directory and running &quot;./hello&quot;.
+You should see it output &quot;Hello!&quot;</p>
+<pre><code class="nohighlight">$ cd demo/4/src
+$ ./hello
+Hello!
+</code></pre>
+<h2><a name="conclusion">Conclusion</a> <a href="#contents">^</a></h2>
+<p>This demonstration hopefully serves well as a simple example that support the
+various concerns and methodologies at play in a project.
+Some of those concerns include the choice of language, development and testing
+methodologies, tools, and so on.
+It is important is to realize that Litdown can be used to develop in <em>any</em>
+language and accommodate any methodology.</p>
+<h1><a name="core">Core</a> <a href="#contents">^</a></h1>
+<h2><a name="core-file">Core file</a> <a href="#contents">^</a></h2>
+<h3><a name="lib-litdown-js">lib/litdown.js</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;Core header&quot;
+_&quot;Core helper functions&quot;
+_&quot;CLI&quot;
+_&quot;Core function&quot;
+_&quot;Core options&quot;
+_&quot;Core footer&quot;
+</code></pre>
+<h2><a name="core-function">Core function</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">function litdown (src, opt) {
+
+try {
+
+opt = opt ? merge({}, litdown.defaults, opt) : litdown.defaults;
+
+this.state = {
+	readme: src,
+	toc: { md: '# ' + opt.toc.header + '\n\n' },
+	blocks: { contents: {
+		'_backticks': '```',
+		'_tab': '\t',
+	}, order: [] },
+	files: { contents: {}, order: [], mode: {} },
+};
+
+var backend = opt.backend;
+
+// backend parse
+this.state = backend.parse(src, this.state, opt);
+
+// prepend the toc to the readme
+this.state.toc.md += '\n';
+this.state.readme = this.state.toc.md + this.state.readme;
+
+// resolve files
+this.state.files.order.forEach(function (s) {
+	var t = normalize(s);
+	var c = this.state.blocks.contents[t] || '';
+	var w = c;
+
+	// replace template labels
+	var re = new RegExp('_' + '&quot;([^&quot;]+)&quot;');
+	var m;
+	var n = canary();
+	while ( (m = re.exec(c) ) !== null) {
+		var l = normalize(m[1]);
+		if (l == t) {
+			throw new Error('Circular template label &quot;' + l + '&quot; detected in &quot;'
+			+ s + '&quot; file at index &quot;' + m.index + '&quot;');
+		}
+		w = this.state.blocks.contents[l];
+		if (! w) w = '_' + n + m[1] + n;
+		c = c.replace(re, w);
+	}
+	c = c.replace(new RegExp(n, 'g'), '&quot;');
+
+	this.state.files.contents[s] = c + '\n';
+});
+
+// backend render
+this.state = backend.render(this.state, opt);
+this.state.html = this.state.html
+	.replace(/_&amp;quot;_tab&amp;quot;/g, '\t')
+	.replace(/_&amp;quot;_backticks&amp;quot;/g, '```')
+	.replace(new RegExp('&lt;code class=&quot;' + opt.lang_prefix +
+		'nohighlight&quot;&gt;', 'g'), '&lt;code class=&quot;nohighlight&quot;&gt;');
+this.state.html = this.state.toc.html + this.state.html;
+this.state.html = opt.html.header + this.state.html + opt.html.footer;
+
+// highlight
+this.state.html = opt.highlight(this.state.html);
+
+delete this.state.f;
+var r = this.state;
+this.state = {};
+r.opt = opt;
+return r;
+
+} catch (e) {
+
+if (e.code == 'MODULE_NOT_FOUND') {
+	var m = /'([^']*)'/.exec(e.message);
+	e.message += '. Install it via `npm install -g ' + m[1] + '`.\n';
+}
+
+if (opt.silent) {
+	return '&lt;p&gt;ERROR:&lt;/p&gt;&lt;pre&gt;' + encode(e.message, true) + '&lt;/pre&gt;';
+}
+
+throw e;
+
+}
+
+}
+</code></pre>
+<h2><a name="core-options">Core options</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">litdown.options = litdown.setOptions = function (opt) {
+	merge (litdown.defaults, opt);
+	return litdown;
+};
+
+litdown.defaults = {
+	silent: false,
+	toc: { maxlevel: 2, header: 'Contents', top: '^' },
+	html: {
+		header: '&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n&lt;head&gt;\n&lt;style&gt;\n' +
+			'\tcode{\n' +
+			'\t\tbackground-color: #f0f0f0;\n' +
+			'\t\tpadding: 0px 2px;\n' +
+			'\t\tborder: 1px solid #c0c0c0;\n' +
+			'\t}\n' +
+			'\tpre code{\n' +
+			'\t\tdisplay: block;\n' +
+			'\t}\n' +
+			'\tpre{\n' +
+			'\t\ttab-size: 4;\n' +
+			'\t\twhite-space: pre-wrap;\n' +
+			'\t}\n' +
+			'\ta{\n' +
+			'\t\ttext-decoration: none;\n' +
+			'\t}\n' +
+			'&lt;/style&gt;\n&lt;/head&gt;\n&lt;body&gt;\n',
+		footer: '\t&lt;/body&gt;\n&lt;/html&gt;\n',
+	},
+	lang_prefix: 'lang-',
+	f: {
+		normalize: normalize,
+		encode: encode,
+		canary: canary,
+		header_state: header_state,
+		header_html: header_html,
+		link_state: link_state,
+		link_html: link_html,
+		code_state: code_state,
+		code_html: code_html,
+	},
+};
+</code></pre>
+<h2><a name="core-helper-functions">Core helper functions</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">var encodings = [
+	['&amp;',  'amp'],
+	['&lt;',  'lt'],
+	['&gt;',  'gt'],
+	['&quot;',  'quot'],
+];
+
+function encode (html) {
+	for (var i = 0; i &lt; encodings.length; i++) {
+		var re = new RegExp(encodings[i][0], 'g');
+		html = html.replace(re, '&amp;' + encodings[i][1] + ';');
+	}
+	return html;
+}
+
+function merge (obj) {
+	var target;
+	var key;
+	for (var i = 1; i &lt; arguments.length; i++) {
+		target = arguments[i];
+		for (key in target) {
+			if (Object.prototype.hasOwnProperty.call(target, key)) {
+				obj[key] = target[key];
+			}
+		}
+	}
+	return obj;
+}
+
+function normalize (s) {
+	return s.toLowerCase().replace(/[^\w+]/g, '-');
+}
+
+function flow (text, width, indent) {
+	if (! width) width = process.stdout.columns - 1 || 80;
+	if (! indent) indent = '';
+	var r = indent;
+	var len = r.length;
+	if (text instanceof Array) text = text.join(' ');
+	if (text.match(/^\* /)) indent += '  ';
+	text.split(' ').forEach(function (word) {
+		if ( (len + word.length + 1) &lt; width) {
+			r += word + ' ';
+			len += word.length + 1;
+		} else {
+			r += '\n' + indent + word + ' ';
+			len = indent.length + word.length + 1;
+		}
+	});
+	r += '\n';
+	return r;
+}
+
+function canary () {
+	return Math.floor(Math.random() * Math.pow(2, 50)).toString(36);
+}
+
+function header_state (level, text, toc, state) {
+	var t = normalize(text);
+	if (state.blocks.contents[t] == null) {
+		state.blocks.contents[t] = '';
+		state.blocks.order.push(t);
+	}
+	if (level &lt;= toc.maxlevel) {
+		for (var i = 1; i &lt; level; i++) state.toc.md += '    ';
+		state.toc.md += '* [' + text + '](#' + t + ')\n';
+	}
+	return state;
+}
+
+function header_html (level, text, toc) {
+	var t = normalize(text);
+	var r = '&lt;a name=&quot;' + t + '&quot;&gt;' + text + '&lt;/a&gt;';
+	if (toc)
+		r += ' &lt;a href=&quot;#' + normalize(toc.header) + '&quot;&gt;' + toc.top + '&lt;/a&gt;';
+	r = '&lt;h' + level + '&gt;' + r + '&lt;/h' + level + '&gt;\n';
+	return r;
+}
+
+function link_state (text, href, title, state) {
+	if (href &amp;&amp; href.match(/^#/)) {
+		href = href.replace(/^#/, '');
+		if (title &amp;&amp; title.match(/^save:/)) {
+			if (state.files.contents[href] == null) {
+				state.files.contents[href] = '';
+				state.files.mode[href] = title.replace(/^save:/, '');
+				state.files.order.push(href);
+			}
+		}
+	}
+	return state;
+}
+
+function link_html (text, href, title) {
+	if (href &amp;&amp; href.match(/^#/))
+		href = '#' + normalize(href.replace(/^#/, ''));
+	var r = '&lt;a href=&quot;' + href + '&quot;';
+	if (title) r += ' title=&quot;' + title + '&quot;';
+	r += '&gt;' + text + '&lt;/a&gt;';
+	return r;
+}
+
+function code_state (code, state) {
+	var t = state.blocks.order[state.blocks.order.length - 1];
+	if (! state.blocks.contents[t])
+		state.blocks.contents[t] = code;
+	return state;
+}
+
+function code_html (code, lang, prefix) {
+	code = code.replace(/\n+$/, '');
+	var r = '&lt;pre&gt;&lt;code';
+	if (lang &amp;&amp; prefix) r += ' class=&quot;' + prefix + lang + '&quot;';
+	r += '&gt;' + encode(code) + '\n&lt;/code&gt;&lt;/pre&gt;\n';
+	return r;
+}
+</code></pre>
+<h2><a name="core-header">Core header</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">;(function () {
+</code></pre>
+<h2><a name="core-footer">Core footer</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">litdown.state = {};
+litdown.cli = cli;
+
+if (typeof module !== 'undefined' &amp;&amp; typeof exports === 'object') {
+	module.exports = litdown;
+} else if (typeof define === 'function' &amp;&amp; define.amd) {
+	define(function() { return litdown; });
+} else {
+	this.litdown = litdown;
+}
+
+}).call(function () {
+	return this || (typeof window !== 'undefined' ? window : global);
+}());
+</code></pre>
+<h1><a name="cli">CLI</a> <a href="#contents">^</a></h1>
+<p>Litdown's command line interface is provided by the <code>cli</code> function, which is
+called by the <a href="#cli-utility">CLI utility</a>.</p>
+<pre><code class="lang-javascript">function cli (argv) {
+
+_&quot;CLI modules&quot;
+_&quot;CLI helper functions&quot;
+_&quot;CLI configuration&quot;
+_&quot;CLI backend detection&quot;
+_&quot;CLI syntax highlighter detection&quot;
+_&quot;CLI usage&quot;
+_&quot;CLI process options&quot;
+_&quot;CLI error checking&quot;
+_&quot;CLI extract mode&quot;
+_&quot;CLI create mode&quot;
+
+throw new Error('Invalid mode &quot;' + cfg.mode + '&quot;!');
+}
+</code></pre>
+<h2><a name="cli-modules">CLI modules</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">var fs = require('fs');
+var path = require('path');
+</code></pre>
+<h2><a name="cli-configuration">CLI configuration</a> <a href="#contents">^</a></h2>
+<p>The <code>cfg</code> object holds the configuration for the command line interface.
+It is printed to STDOUT if the <code>-v</code> option is used (at the bottom of
+<a href="#cli-process-options">CLI process options</a>).
+It is also saved as <code>state.cfg</code> in the <code>litdown.json</code> file if the <code>-l</code> option
+is used.</p>
+<pre><code class="lang-javascript">var cfg = {
+	verbose: 1,
+	encoding: 'utf8',
+	backend: {
+		plugins: path.join(__dirname, 'backend'),
+		preferred: ['commonmark', 'marked', 'markdown-it'],
+	},
+	highlight: {
+		plugins: path.join(__dirname, 'highlight'),
+		preferred: ['highlightjs-cdn', 'none'],
+	},
+	json: false,
+	mode: 'extract',
+};
+</code></pre>
+<h2><a name="cli-backend-detection">CLI backend detection</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">cfg.backend.supported = fs.readdirSync(cfg.backend.plugins).map(rmext);
+if (cfg.backend.supported.length &lt; 1)
+	throw new Error('No backend plugins!');
+cfg.backend.installed = cfg.backend.supported.filter(function (n) {
+	var f;
+	try { f = require.resolve(n) } catch (e) {}
+	return f;
+});
+for (var i = 0; i &lt; cfg.backend.preferred.length; i++) {
+	var n = cfg.backend.preferred[i];
+	if (cfg.backend.installed.indexOf(n) &gt;= 0) {
+		cfg.backend.selected = n;
+		i = cfg.backend.preferred.length;
+	}
+}
+</code></pre>
+<h2><a name="cli-syntax-highlighter-detection">CLI syntax highlighter detection</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">cfg.highlight.supported = fs.readdirSync(cfg.highlight.plugins).map(rmext);
+if (cfg.highlight.supported.length &lt; 1)
+	throw new Error('No highlight plugins!');
+cfg.highlight.selected = cfg.highlight.preferred[0];
+</code></pre>
+<h2><a name="cli-usage">CLI usage</a> <a href="#contents">^</a></h2>
+<p>See also: <a href="#usage">Usage</a>.</p>
+<pre><code class="lang-javascript">var usage = '\n' +
+'# Usage\n\n```\n' +
+'litdown -x [options] file\n' +
+'litdown -c [options] directory\n' +
+'```\n\n# Options\n\n```\n' +
+'-h, --help   Show usage\n' +
+'-v           Increase verbosity\n' +
+'-q           Disable output\n' +
+'```\n\n## Mode options\n\n```\n' +
+'-x   Extract a Markdown file to a directory (default)\n' +
+'-c   Create a Markdown file from files in directory\n' +
+'```\n\n## Extract options\n\n```\n' +
+'-l               Save internal state to &quot;litdown.json&quot;\n' +
+'-b name[,name]   Preferred backend(s) (default: ' +
+	cfg.backend.preferred.join(',') + ')\n' +
+'-B               Show backend selection (use after -b to check)\n' +
+'-s name[,name]   Preferred syntax highlighter (default: ' +
+	cfg.highlight.preferred.join(',') + ')\n' +
+'-S               Show syntax highlighter selection (use after -s to check)\n' +
+'```\n';
+</code></pre>
+<h2><a name="cli-process-options">CLI process options</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">var args = [];
+for (var i = 0; i &lt; argv.length; i++) {
+
+var s = argv[i];
+
+// Universal options
+
+// -h, --help
+if (s == '-h' || s == '--help') {
+	console.log(usage);
+	process.exit(0);
+
+// -v
+} else if (s == '-v') {
+	cfg.verbose++;
+
+// -q
+} else if (s == '-q') {
+	cfg.verbose = 0;
+
+// Mode options
+
+// -x
+} else if (s == '-x') {
+	cfg.mode = 'extract';
+
+// -c
+} else if (s == '-c') {
+	cfg.mode = 'create';
+
+// Extract options
+
+// -l
+} else if (s == '-l') {
+	cfg.json = true;
+
+// -b
+} else if (s == '-b') {
+	var a = argv[i + 1];
+	if (! a) a = '';
+	a = a.split(/,/);
+	var b = [];
+	for (var j = 0; j &lt; a.length; j++) {
+		var n = a[j];
+		if (! n || n == '') {
+			B();
+			return 0;
+		} else if (cfg.backend.supported.indexOf(n) &lt; 0) {
+			console.log('ERROR: The &quot;' + n + '&quot; backend is not ' +
+				'supported.');
+			process.exit(1);
+		} else if (cfg.backend.installed.indexOf(n) &lt; 0) {
+			console.log('ERROR: The &quot;' + n + '&quot; backend is not ' +
+				'installed. ' +
+				'Install it via `npm install -g ' + n + '`.');
+			process.exit(1);
+		} else {
+			b.push(n);
+		}
+	}
+	cfg.backend.preferred = b.slice(0);
+	cfg.backend.selected = cfg.backend.preferred[0];
+	i++;
+
+// -B
+} else if (s == '-B') {
+	B();
+	return 0;
+
+// -s
+} else if (s == '-s') {
+	var a = argv[i + 1];
+	if (! a) a = '';
+	a = a.split(/,/);
+	var b = [];
+	for (var j = 0; j &lt; a.length; j++) {
+		var n = a[j];
+		if (! n || n == '') {
+			S();
+			return 0;
+		} else if (cfg.highlight.supported.indexOf(n) &lt; 0) {
+			console.log('ERROR: The &quot;' + n + '&quot; syntax highlighter is ' +
+				'not supported.');
+			process.exit(1);
+		} else {
+			b.push(n);
+		}
+	}
+	cfg.highlight.preferred = b.slice(0);
+	cfg.highlight.selected = cfg.highlight.preferred[0];
+	i++;
+
+// -S
+} else if (s == '-S') {
+	S();
+	return 0;
+
+// Argument
+} else {
+	args.push(s);
+}
+
+}
+
+vv('cfg = ' + JSON.stringify(cfg, null, '\t'));
+</code></pre>
+<h2><a name="cli-error-checking">CLI error checking</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">if (args.length &lt; 1) {
+	console.log(usage);
+	return 1;
+}
+if (cfg.backend.installed.length &lt; 1) {
+	console.log('ERROR: No backend modules installed! ' +
+		'Please install one or more of: ' +
+		cfg.backend.supported.join(', ') + '.\n' + usage);
+	process.exit(1);
+}
+</code></pre>
+<h2><a name="cli-extract-mode">CLI extract mode</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">if (cfg.mode == 'extract') {
+
+var f = args[0];
+v(f);
+var n = path.basename(f, '.md');
+fs.readFile(f, { encoding: cfg.encoding }, function (e, input) {
+	if (e) {
+		if (e.code == 'EISDIR') {
+			console.log('ERROR: &quot;' + f + '&quot; is a directory! ' +
+				'Perhaps you meant to use -c?');
+			process.exit(1);
+		}
+		throw e;
+	}
+	var backend = path.join(cfg.backend.plugins, cfg.backend.selected);
+	backend = require(backend);
+	var highlight = path.join(cfg.highlight.plugins, cfg.highlight.selected);
+	highlight = require(highlight);
+	var state = litdown(input, { backend: backend, highlight: highlight });
+	state.cfg = cfg;
+	fs.mkdir(n, function (e) {
+		if (e) {
+			if (e.code == 'EEXIST') {
+				console.log('ERROR: Directory &quot;' + n + '&quot; exists!\n');
+				process.exit(1);
+			}
+			throw e;
+		}
+		if (cfg.json)
+			write_file(JSON.stringify(state, null, '\t') + '\n',
+				n, 'litdown.json');
+		write_file(input, n, n + '.md');
+		write_file(state.html, n, n + '.html');
+		write_file(state.readme, n, 'README.md');
+		state.files.order.forEach(function (f) {
+			write_file(state.files.contents[f], n, f,
+				state.files.mode[f]);
+		});
+	});
+});
+
+return 0;
+
+}
+</code></pre>
+<h2><a name="cli-create-mode">CLI create mode</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">if (cfg.mode == 'create') {
+
+var d = args[0];
+var f = path.basename(d) + '.md';
+v(f);
+if (exists(f)) {
+	console.log('ERROR: File &quot;' + f + '&quot; exists!');
+	process.exit(1);
+}
+var list = find(d);
+var files = list.files;
+var output = &quot;# Files\n\n&quot;;
+var re = new RegExp('^' + d + '/');
+for (var i = 0; i &lt; files.length; i++) {
+	var fn = files[i].replace(re, '');
+	var mode = (list.stat[files[i]].mode - 32768).toString(8);
+	if (mode == '644') mode = '';
+	output += '* [' + fn + '](#' + fn + ' &quot;save:' + mode + '&quot;)\n';
+}
+for (var i = 0; i &lt; files.length; i++) {
+	var fn = files[i].replace(re, '');
+	output += '\n## ' + fn + '\n\n```\n';
+	var d = fs.readFileSync(files[i], { encoding: 'utf8' });
+	d = d.replace(/```/g, '_' + '&quot;_backticks&quot;');
+	output += d;
+	output = output.replace(/\n$/, '') + &quot;\n```\n&quot;;
+	v('  ' + files[i]);
+}
+output += '\n';
+fs.writeFileSync(f, output);
+
+return 0;
+
+}
+</code></pre>
+<h2><a name="cli-helper-functions">CLI helper functions</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">function find (d) {
+	var r = { files: [], dirs: [], stat: {} };
+	var f = fs.readdirSync(d);
+	for (var i = 0; i &lt; f.length; i++) {
+		if (! f[i].match(/^\./)) {
+			var n = path.join(d, f[i]);
+			var s = fs.statSync(n);
+			if (s.isDirectory()) {
+				r.dirs.push(n);
+				var t = find(n);
+				for (var j = 0; j &lt; t.files.length; j++) {
+					r.stat[t.files[j]] = t.stat[t.files[j]];
+					r.files.push(t.files[j]);
+                }
+                for (var j = 0; j &lt; t.dirs.length; j++) {
+                    r.dirs.push(t.dirs[j]);
+				}
+			} else {
+				r.stat[n] = s;
+				r.files.push(n);
+			}
+		}
+	}
+	return r;
+}
+
+function mkpath (d, f) {
+	d = path.resolve(d);
+	f = f || function () {};
+	fs.mkdir(d, function (e) {
+		if (e) {
+			if (e.code === 'ENOENT') {
+				mkpath(path.dirname(d),
+					function (e) { e ? f(e) : mkpath(d, f) });
+			} else if (e.code === 'EEXIST') {
+				f(null);
+			} else {
+				f(e);
+			}
+		} else {
+			f(null);
+		}
+	});
+}
+
+function write_file(d, n, f, m) {
+	var fn = path.join(n, f);
+	if (! m)
+		m = 0644;
+	else if (m.match(/^[0-7]{3}$/))
+		m = eval('0' + m)
+	else
+		throw new Error('Invalid file mode &quot;' + m + '&quot;!' +
+			' Must be three octal digits.');
+	mkpath(path.dirname(fn), function (e) {
+		if (e) throw e;
+		fs.writeFile(fn, d, { mode: m }, function (e) {
+			v('  ' + fn);
+			if (e) throw e;
+		});
+	});
+}
+
+function exists (f) {
+	try {
+		fs.writeFileSync(f, '', { flag: 'wx' });
+	} catch (e) {
+		return e &amp;&amp; e.code === 'EEXIST' ? true : false;
+	}
+}
+
+function B () {
+	console.log('Backends\n' +
+		'  Supported: ' + cfg.backend.supported.join(', ') + '\n' +
+		'  Installed: ' + cfg.backend.installed.join(', ') + '\n' +
+		'  Preferred: ' + cfg.backend.preferred.join(', ') + '\n' +
+		'  Selected:  ' + cfg.backend.selected);
+}
+
+function S () {
+	console.log('Syntax highlighters\n' +
+		'  Supported: ' + cfg.highlight.supported.join(', ') + '\n' +
+		'  Preferred: ' + cfg.highlight.preferred.join(', ') + '\n' +
+		'  Selected:  ' + cfg.highlight.selected);
+}
+
+function rmext (f) { return f.replace(/\.js$/, '') }
+
+function v_ (s, v, n) { if (v &gt;= n) console.log(s) }
+
+function v (s) { v_(s, cfg.verbose, 1) }
+
+function vv (s) { v_(s, cfg.verbose, 2) }
+</code></pre>
+<h2><a name="cli-utility">CLI utility</a> <a href="#contents">^</a></h2>
+<p>The CLI utility is a small file that just loads the litdown module and passes
+the command line arguments to the <a href="#cli">cli function</a>.</p>
+<h3><a name="bin-litdown-js">bin/litdown.js</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">#!/usr/bin/env node
+&quot;use strict&quot;;
+require('../index.js').cli(process.argv.slice(2));
+</code></pre>
+<h1><a name="backend-plugins">Backend plugins</a> <a href="#contents">^</a></h1>
+<p>While the preferred backend is currently Commonmark due to its goal of
+standardization, Litdown's plugin system allows for the alternative use of
+either Markdown-it or Marked.</p>
+<p>The backend plugin system is able to use any of the supported backend modules
+interchangeably.
+For example, it will automatically default to the one you have installed (if
+you have only one).</p>
+<p>Backend plugins are written to smooth out any differences in the resulting
+output from each of the backend modules.
+This can be demonstrated via the <a href="#bin-backends-sh">backend benchmark script</a>,
+which processes <a href="../litdown.md">litdown.md</a> with each backend.
+The <code>diff</code> commands should not report any differences between the directories.</p>
+<pre><code class="nohighlight">bin/backends.sh -k
+diff -ru backends/{commonmark,marked}
+diff -ru backends/{commonmark,markdown-it}
+</code></pre>
+<p>The <a href="#bin-backends-sh">backend benchmark script</a> can also be used to benchmark
+the backend modules against each other on your system via <code>bin/backends.sh</code>.
+At this time, the rankings in terms of speed alone and given just one
+iteration, are marked, commonmark, then markdown-it.
+Note that you may wish to consider additional factors such as memory usage,
+software license, philosophy, and so on in your choice of backend module.</p>
+<pre><code class="nohighlight">commonmark
+
+real	0m0.111s
+user	0m0.111s
+sys	0m0.014s
+
+markdown-it
+
+real	0m0.147s
+user	0m0.126s
+sys	0m0.022s
+
+marked
+
+real	0m0.080s
+user	0m0.078s
+sys	0m0.013s
+</code></pre>
+<p>Backend plugins must have <code>parse</code> and <code>render</code> methods.
+The <code>parse</code> method accepts arguments <code>src</code>, <code>state</code>, and <code>opt</code>.
+The <code>render</code> method accepts arguments <code>state</code> and <code>opt</code>.</p>
+<p>The <code>src</code> argument is the literate Markdown source.
+The <code>state</code> argument is the state object that the litdown function works on to
+process the Markdown.
+The <code>opt</code> argument is the configuration of the litdown function.
+The <code>opt.f</code> object contains functions that aid the plugin's job.</p>
+<p>The backend's parse method is called first to perform any initial setup and
+process the Markdown source into Litdown's state object.
+Then Litdown performs intermediate processing such as resolving the contents of
+files.
+Finally, the backend's render method is called to perform remaining processing,
+such as generating the HTML for the table of contents.</p>
+<h2><a name="backend-plugin-header">Backend plugin header</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">;(function () {
+</code></pre>
+<h2><a name="commonmark-backend">Commonmark backend</a> <a href="#contents">^</a></h2>
+<h3><a name="commonmark-module">Commonmark module</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">var commonmark = require('commonmark');
+var parser = new commonmark.Parser();
+var renderer = new commonmark.HtmlRenderer();
+</code></pre>
+<h3><a name="commonmark-parse-function">Commonmark parse function</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">function parse (src, state, opt) {
+
+src = src.replace(/\t/g, '_' + '&quot;_tab&quot;');
+
+state.ast = parser.parse(src);
+
+// traverse abstract syntax tree
+var walker = state.ast.walker();
+var e;
+var n;
+state.anchor = {};
+while ((e = walker.next())) {
+	if (e.entering) {
+		n = e.node;
+
+		// Header
+		if (n.type === 'Header') {
+			var text = n.firstChild.literal;
+			var level = n.level;
+			state = opt.f.header_state(level, text, opt.toc, state);
+			var t = opt.f.normalize(text);
+			if (! state.anchor[t]) state.anchor[t] = text;
+			n.firstChild.literal = '_' + '&quot;_anchor:' + t + '&quot;';
+
+		// Link
+		} else if (n.type === 'Link') {
+			var title = n.title;
+			var href = n.destination;
+			state = opt.f.link_state(text, href, title, state);
+			if (href.match(/^#/))
+				n.destination = '#' + opt.f.normalize(href.replace(/^#/, ''));
+
+		// Code
+		} else if (n.type === 'CodeBlock') {
+			var code = n.literal.replace(/\n+$/, '');
+			//var lang = n.info;
+			state = opt.f.code_state(code, state);
+		}
+	}
+}
+
+return state;
+
+}
+</code></pre>
+<h3><a name="commonmark-render-function">Commonmark render function</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">function render (state, opt) {
+
+// use header_html?
+
+var h = opt.toc.header;
+var top = opt.f.normalize(h);
+state.toc.html = renderer.render(parser.parse(state.toc.md))
+	.replace(new RegExp('&lt;h1&gt;' + h + '&lt;/h1&gt;'),
+		'&lt;h1&gt;&lt;a name=&quot;' + top + '&quot;&gt;' + h + '&lt;/a&gt;&lt;/h1&gt;');
+
+var html = renderer.render(state.ast);
+
+delete state.ast; // causes error when dumping state via -l to litdown.json
+
+// resolve anchors
+var re = new RegExp('_&amp;quot;_anchor:([a-z0-9\-]+)&amp;quot;');
+var m;
+while ( (m = re.exec(html) ) !== null) {
+	var t = m[1];
+	var text = state.anchor[t];
+	var r = new RegExp('_&amp;quot;_anchor:' + t + '&amp;quot;', 'g');
+	html = html.replace(r,
+		'&lt;a name=&quot;' + t + '&quot;&gt;' + text + '&lt;/a&gt; ' +
+		'&lt;a href=&quot;#' + top + '&quot;&gt;' + opt.toc.top + '&lt;/a&gt;');
+}
+
+// replace lang prefix
+re = new RegExp('&lt;code class=&quot;language-([^&quot;]+)&quot;&gt;');
+while ( (m = re.exec(html) ) !== null) {
+	html = html.replace(re, '&lt;code class=&quot;' + opt.lang_prefix + m[1] + '&quot;&gt;');
+}
+
+state.html = html;
+
+return state;
+
+}
+</code></pre>
+<h3><a name="lib-backend-commonmark-js">lib/backend/commonmark.js</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;Backend plugin header&quot;
+_&quot;Commonmark module&quot;
+_&quot;Commonmark parse function&quot;
+_&quot;Commonmark render function&quot;
+_&quot;Backend plugin footer&quot;
+</code></pre>
+<h2><a name="markdown-it-backend">Markdown-it backend</a> <a href="#contents">^</a></h2>
+<h3><a name="markdown-it-module">Markdown-it module</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">var md = require('markdown-it')();
+</code></pre>
+<h3><a name="markdown-it-parse-function">Markdown-it parse function</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">function parse (src, state, opt) {
+
+var heading = '';
+var link = '';
+
+var def = {
+	text: md.renderer.rules.text,
+};
+
+md.renderer.rules.text = function (tokens, idx, options, env, self) {
+	var text = tokens[idx].content;
+
+	// Header
+	if (heading != '') {
+		var level = heading.replace(/^h/, '');
+		heading = '';
+		state = opt.f.header_state(level, text, opt.toc, state);
+		return opt.f.header_html(level, text, opt.toc);
+	
+	// Link
+	} else if (link != '') {
+		var href = link.href;
+		var title = link.title;
+		link = '';
+		state = opt.f.link_state(text, href, title, state);
+		return opt.f.link_html(text, href, title);
+	}
+
+	return def.text(tokens, idx, options, env, self);
+};
+
+// Header
+md.renderer.rules.heading_open = function (tokens, idx) {
+	heading = tokens[idx].tag;
+	return '';
+};
+md.renderer.rules.heading_close = function () { return '' }
+
+// Link
+md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+	var a = tokens[idx].attrs;
+	link = {};
+	for (var i = 0; i &lt; a.length; i++) link[a[i][0]] = a[i][1];
+	return '';
+}
+md.renderer.rules.link_close = function () { return '' }
+
+// Code
+md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+	var code = tokens[idx].content.replace(/\n+$/, '');
+	var lang = tokens[idx].info;
+	state = opt.f.code_state(code, state);
+	return opt.f.code_html(code, lang, opt.lang_prefix);
+};
+
+src = src.replace(/\t/g, '_' + '&quot;_tab&quot;');
+
+state.html = md.render(src);
+
+return state;
+
+}
+</code></pre>
+<h3><a name="markdown-it-render-function">Markdown-it render function</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">function render (state, opt) {
+
+md = require('markdown-it')();
+
+var heading = '';
+
+var def = {
+	text: md.renderer.rules.text,
+};
+
+md.renderer.rules.text = function (tokens, idx, options, env, self) {
+	var text = tokens[idx].content;
+
+	// Header
+	if (heading != '') {
+		var level = heading.replace(/^h/, '');
+		heading = '';
+		return opt.f.header_html(level, text);
+	}
+
+	return def.text(tokens, idx, options, env, self);
+};
+
+// Header
+md.renderer.rules.heading_open = function (tokens, idx) {
+	heading = tokens[idx].tag;
+	return '';
+};
+md.renderer.rules.heading_close = function () { return '' }
+
+state.toc.html = md.render(state.toc.md);
+
+return state;
+
+}
+</code></pre>
+<h3><a name="lib-backend-markdown-it-js">lib/backend/markdown-it.js</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;Backend plugin header&quot;
+_&quot;Markdown-it module&quot;
+_&quot;Markdown-it parse function&quot;
+_&quot;Markdown-it render function&quot;
+_&quot;Backend plugin footer&quot;
+</code></pre>
+<h2><a name="marked-backend">Marked backend</a> <a href="#contents">^</a></h2>
+<h3><a name="marked-module">Marked module</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">var marked = require('marked');
+</code></pre>
+<h3><a name="marked-parse-function">Marked parse function</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">function parse (src, state, opt) {
+
+var renderer = new marked.Renderer();
+
+// Header
+renderer.heading = function (text, level) {
+	state = opt.f.header_state(level, text, opt.toc, state);
+	return opt.f.header_html(level, text, opt.toc);
+};
+
+// Link
+renderer.link = function (href, title, text) {
+	state = opt.f.link_state(text, href, title, state);
+	return opt.f.link_html(text, href, title);
+};
+
+// Code
+renderer.code = function (code, lang) {
+	state = opt.f.code_state(code, state);
+	return opt.f.code_html(code, lang, opt.lang_prefix);
+};
+
+src = src.replace(/\t/g, '_' + '&quot;_tab&quot;');
+
+state.html = marked(src, { renderer: renderer })
+	.replace(/&gt;&lt;ul&gt;/g, '&gt;\n&lt;ul&gt;')
+	.replace(/&amp;#39;/g, &quot;'&quot;);
+
+return state;
+
+}
+</code></pre>
+<h3><a name="marked-render-function">Marked render function</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">function render (state, opt) {
+
+var renderer = new marked.Renderer();
+
+renderer.heading = function (text, level) {
+	return opt.f.header_html(level, text);
+};
+
+state.toc.html = marked(state.toc.md, { renderer: renderer })
+	.replace(/&gt;&lt;ul&gt;/g, '&gt;\n&lt;ul&gt;');
+
+return state;
+
+}
+</code></pre>
+<h3><a name="lib-backend-marked-js">lib/backend/marked.js</a> <a href="#contents">^</a></h3>
+<pre><code class="nohighlight">_&quot;Backend plugin header&quot;
+_&quot;Marked module&quot;
+_&quot;Marked parse function&quot;
+_&quot;Marked render function&quot;
+_&quot;Backend plugin footer&quot;
+</code></pre>
+<h2><a name="backend-plugin-footer">Backend plugin footer</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">var backend = { parse: parse, render: render };
+
+if (typeof module !== 'undefined' &amp;&amp; typeof exports === 'object') {
+	module.exports = backend;
+} else if (typeof define === 'function' &amp;&amp; define.amd) {
+	define(function() { return backend; });
+} else {
+	this.backend = backend;
+}
+
+}).call(function () {
+	return this || (typeof window !== 'undefined' ? window : global);
+}());
+</code></pre>
+<h1><a name="highlight-plugins">Highlight plugins</a> <a href="#contents">^</a></h1>
+<h2><a name="highlight-plugin-header">Highlight plugin header</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">;(function () {
+</code></pre>
+<h2><a name="highlightjs-cdn-highlight-plugin">Highlightjs CDN highlight plugin</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">function highlight (html) {
+
+var p = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/';
+var css = p + 'styles/default.min.css';
+var js = p + 'highlight.min.js';
+
+return html.replace('&lt;/head&gt;',
+	'&lt;link rel=&quot;stylesheet&quot; href=&quot;' + css + '&quot;&gt;\n' +
+	'&lt;script src=&quot;' + js + '&quot;&gt;&lt;/script&gt;\n' +
+	'&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;\n' +
+	'&lt;/head&gt;');
+
+}
+</code></pre>
+<h3><a name="lib-highlight-highlightjs-cdn-js">lib/highlight/highlightjs-cdn.js</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">_&quot;Highlight plugin header&quot;
+_&quot;Highlightjs CDN highlight plugin&quot;
+_&quot;Highlight plugin footer&quot;
+</code></pre>
+<h2><a name="none-highlight-plugin">None highlight plugin</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">function highlight (html) { return html }
+</code></pre>
+<h3><a name="lib-highlight-none-js">lib/highlight/none.js</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">_&quot;Highlight plugin header&quot;
+_&quot;None highlight plugin&quot;
+_&quot;Highlight plugin footer&quot;
+</code></pre>
+<h2><a name="highlight-plugin-footer">Highlight plugin footer</a> <a href="#contents">^</a></h2>
+<pre><code class="lang-javascript">if (typeof module !== 'undefined' &amp;&amp; typeof exports === 'object') {
+	module.exports = highlight;
+} else if (typeof define === 'function' &amp;&amp; define.amd) {
+	define(function() { return highlight; });
+} else {
+	this.highlight = highlight;
+}
+
+}).call(function () {
+	return this || (typeof window !== 'undefined' ? window : global);
+}());
+</code></pre>
+<h1><a name="miscellaneous">Miscellaneous</a> <a href="#contents">^</a></h1>
+<h2><a name="entry-point">Entry point</a> <a href="#contents">^</a></h2>
+<h3><a name="index-js">index.js</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-javascript">module.exports = require('./lib/litdown.js');
+</code></pre>
+<h2><a name="make-file">Make file</a> <a href="#contents">^</a></h2>
+<h3><a name="makefile">Makefile</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">n = litdown
+pdf = doc/$(n).pdf
+min = lib/$(n).min.js
+
+all: pdf min
+
+pdf: $(pdf)
+min: $(min)
+
+figures: $(patsubst %.dot,%.png,$(wildcard doc/fig/*.dot))
+%.png: %.dot; dot -Tpng $&lt; &gt;$@
+
+clean:
+	rm -f $(tex)
+	rm -f $(pdf)
+	rm -f $(min)
+	rm -f doc/fig/*.png
+
+$(pdf): README.md figures
+	cd doc &amp;&amp; pandoc ../$&lt; -o $(n).pdf
+
+doc:
+	mkdir doc
+
+$(min): lib/$(n).js
+	uglifyjs -c -m -o $@ $&lt;
+
+.PHONY: all clean pdf tex min figures
+</code></pre>
+<h4><a name="notes">Notes</a> <a href="#contents">^</a></h4>
+<p>The PDF that pandoc creates from README.md has a couple problems:</p>
+<ul>
+<li>Doesn't convert the _backticks</li>
+</ul>
+<pre><code>sed -i '' 's/_''&quot;_backticks&quot;/```/g' $@
+sed -i '' 's/^\\includegraphics{/\\includegraphics[height=0.75\\textwidth,width=0.75\\textwidth]{/g' $@
+</code></pre>
+<h3><a name="makefile-old">Makefile.old</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-makefile">n = litdown
+pdf = doc/$(n).pdf
+tex = doc/$(n).tex
+min = lib/$(n).min.js
+
+all: tex pdf min
+
+pdf: $(pdf)
+tex: $(tex)
+min: $(min)
+
+figures: $(patsubst %.dot,%.png,$(wildcard doc/fig/*.dot))
+%.png: %.dot; dot -Tpng $&lt; &gt;$@
+
+clean:
+	rm -f $(tex)
+	rm -f $(pdf)
+	rm -f $(min)
+	rm -f doc/fig/*.png
+
+$(tex): README.md doc
+	pandoc -s -o $@ $&lt;
+	sed -i '' 's/_''&quot;_backticks&quot;/```/g' $@
+	sed -i '' 's/^\\includegraphics{/\\includegraphics[height=0.75\\textwidth,width=0.75\\textwidth]{/g' $@
+
+$(pdf): $(tex) figures
+	cd doc &amp;&amp; pdflatex $n.tex &gt;/dev/null &amp;&amp; cd ..
+	rm -f doc/$n.{aux,log,out}
+
+doc:
+	mkdir doc
+
+$(min): lib/$(n).js
+	uglifyjs -c -m -o $@ $&lt;
+
+.PHONY: all clean pdf tex min figures
+</code></pre>
+<h2><a name="benchmarks">Benchmarks</a> <a href="#contents">^</a></h2>
+<h3><a name="bin-backends-sh">bin/backends.sh</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-bash">#!/bin/sh
+
+# purpose: runs each backend once against litdown.md
+#
+# usage: $1 [-k]
+#
+# options
+# -k   Keep directories
+
+set -eo pipefail
+cd $(dirname $0)/..
+if [ &quot;$1&quot; == &quot;-k&quot; ]; then
+	mkdir backends
+fi
+for b in commonmark markdown-it marked; do
+	echo $b
+	rm -rf $b
+	time bin/litdown.js -b $b litdown.md &gt;/dev/null
+	if [ &quot;$1&quot; == &quot;-k&quot; ]; then
+		mv litdown backends/$b
+	else
+		rm -rf litdown
+	fi
+	echo
+done
+</code></pre>
+<h2><a name="test-input">Test input</a> <a href="#contents">^</a></h2>
+<h3><a name="t-circular1-md">t/circular1.md</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-markdown"># blah
+
+[blah](#blah &quot;save:&quot;)
+
+```
+_&quot;blah&quot;
+```
+</code></pre>
+<h3><a name="t-circular2-md">t/circular2.md</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-markdown"># blah
+
+[blah](#blah &quot;save:&quot;)
+
+```
+_&quot;bleh&quot;
+```
+
+# bleh
+
+```
+bleah ble blah bleh
+_&quot;blah&quot;
+```
+</code></pre>
+<h2><a name="demo-script">Demo script</a> <a href="#contents">^</a></h2>
+<p>The main idea for the <a href="#demonstration">demonstration</a> is for the reader to
+manually type out the necessary commands.
+However, the means to automate the entire demonstration can be appreciated.</p>
+<h3><a name="bin-demo-sh">bin/demo.sh</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-bash">#!/bin/sh
+run_test() { autoreconf -vi &amp;&amp; ./configure &amp;&amp; make check; }
+view_log() { cat src/test-suite.log; }
+cd $(dirname $0)/../demo
+cd 1; run_test; view_log; cd ..
+cd 2; run_test; cd ..
+cd 3; run_test; view_log; cd ..
+cd 4; run_test; cd ..
+</code></pre>
+<h1><a name="files">Files</a> <a href="#contents">^</a></h1>
+<h2><a name="embedded">Embedded</a> <a href="#contents">^</a></h2>
+<p>The following files are embedded as templates within the
+<a href="../litdown.md">litdown.md</a> file.</p>
+<ul>
+<li><a href="#bin-backends-sh" title="save:755">bin/backends.sh</a></li>
+<li><a href="#bin-build-sh" title="save:755">bin/build.sh</a></li>
+<li><a href="#bin-demo-sh" title="save:755">bin/demo.sh</a></li>
+<li><a href="#bin-litdown-js" title="save:755">bin/litdown.js</a></li>
+<li><a href="#demo-1-makefile-am" title="save:">demo/1/Makefile.am</a></li>
+<li><a href="#demo-1-configure-ac" title="save:">demo/1/configure.ac</a></li>
+<li><a href="#demo-1-src-makefile-am" title="save:">demo/1/src/Makefile.am</a></li>
+<li><a href="#demo-1-src-t-hello-c" title="save:">demo/1/src/t/hello.c</a></li>
+<li><a href="#demo-2-makefile-am" title="save:">demo/2/Makefile.am</a></li>
+<li><a href="#demo-2-configure-ac" title="save:">demo/2/configure.ac</a></li>
+<li><a href="#demo-2-src-makefile-am" title="save:">demo/2/src/Makefile.am</a></li>
+<li><a href="#demo-2-src-hello-c" title="save:">demo/2/src/hello.c</a></li>
+<li><a href="#demo-2-src-t-hello-c" title="save:">demo/2/src/t/hello.c</a></li>
+<li><a href="#demo-3-makefile-am" title="save:">demo/3/Makefile.am</a></li>
+<li><a href="#demo-3-configure-ac" title="save:">demo/3/configure.ac</a></li>
+<li><a href="#demo-3-src-makefile-am" title="save:">demo/3/src/Makefile.am</a></li>
+<li><a href="#demo-3-src-hello-c" title="save:">demo/3/src/hello.c</a></li>
+<li><a href="#demo-3-src-t-hello-c" title="save:">demo/3/src/t/hello.c</a></li>
+<li><a href="#demo-4-makefile-am" title="save:">demo/4/Makefile.am</a></li>
+<li><a href="#demo-4-configure-ac" title="save:">demo/4/configure.ac</a></li>
+<li><a href="#demo-4-src-makefile-am" title="save:">demo/4/src/Makefile.am</a></li>
+<li><a href="#demo-4-src-hello-c" title="save:">demo/4/src/hello.c</a></li>
+<li><a href="#demo-4-src-t-hello-c" title="save:">demo/4/src/t/hello.c</a></li>
+<li><a href="#doc-fig-logical-diagram-dot" title="save:">doc/fig/logical-diagram.dot</a></li>
+<li><a href="#index-js" title="save:">index.js</a></li>
+<li><a href="#lib-backend-commonmark-js" title="save:">lib/backend/commonmark.js</a></li>
+<li><a href="#lib-backend-markdown-it-js" title="save:">lib/backend/markdown-it.js</a></li>
+<li><a href="#lib-backend-marked-js" title="save:">lib/backend/marked.js</a></li>
+<li><a href="#lib-highlight-highlightjs-cdn-js" title="save:">lib/highlight/highlightjs-cdn.js</a></li>
+<li><a href="#lib-highlight-none-js" title="save:">lib/highlight/none.js</a></li>
+<li><a href="#lib-litdown-js" title="save:">lib/litdown.js</a></li>
+<li><a href="#makefile" title="save:">Makefile</a></li>
+<li><a href="#t-circular1-md" title="save:">t/circular1.md</a></li>
+<li><a href="#t-circular2-md" title="save:">t/circular2.md</a></li>
+</ul>
+<h2><a name="resulting">Resulting</a> <a href="#contents">^</a></h2>
+<p>Here are links to all of the files (generated by the <a href="../Makefile">Makefile</a>,
+<a href="#bin-build-sh">build script</a>, or embedded in <a href="../litdown.md">litdown.md</a>).</p>
+<ul>
+<li><a href="../archives/litdown.tbz">archives/litdown.tbz</a></li>
+<li><a href="../archives/litdown.tgz">archives/litdown.tgz</a></li>
+<li><a href="../archives/litdown.zip">archives/litdown.zip</a></li>
+<li><a href="../bin/backends.sh">bin/backends.sh</a></li>
+<li><a href="../bin/build.sh">bin/build.sh</a></li>
+<li><a href="../bin/litdown.js">bin/litdown.js</a></li>
+<li><a href="../demo/1/Makefile.am">demo/1/Makefile.am</a></li>
+<li><a href="../demo/1/configure.ac">demo/1/configure.ac</a></li>
+<li><a href="../demo/1/src/Makefile.am">demo/1/src/Makefile.am</a></li>
+<li><a href="../demo/1/src/t/hello.c">demo/1/src/t/hello.c</a></li>
+<li><a href="../demo/2/Makefile.am">demo/2/Makefile.am</a></li>
+<li><a href="../demo/2/configure.ac">demo/2/configure.ac</a></li>
+<li><a href="../demo/2/src/Makefile.am">demo/2/src/Makefile.am</a></li>
+<li><a href="../demo/2/src/hello.c">demo/2/src/hello.c</a></li>
+<li><a href="../demo/2/src/t/hello.c">demo/2/src/t/hello.c</a></li>
+<li><a href="../demo/3/Makefile.am">demo/3/Makefile.am</a></li>
+<li><a href="../demo/3/configure.ac">demo/3/configure.ac</a></li>
+<li><a href="../demo/3/src/Makefile.am">demo/3/src/Makefile.am</a></li>
+<li><a href="../demo/3/src/hello.c">demo/3/src/hello.c</a></li>
+<li><a href="../demo/3/src/t/hello.c">demo/3/src/t/hello.c</a></li>
+<li><a href="../demo/4/Makefile.am">demo/4/Makefile.am</a></li>
+<li><a href="../demo/4/configure.ac">demo/4/configure.ac</a></li>
+<li><a href="../demo/4/src/Makefile.am">demo/4/src/Makefile.am</a></li>
+<li><a href="../demo/4/src/hello.c">demo/4/src/hello.c</a></li>
+<li><a href="../demo/4/src/t/hello.c">demo/4/src/t/hello.c</a></li>
+<li><a href="#fig-logical-diagram-dot">doc/fig/logical-diagram.dot</a></li>
+<li><a href="litdown.html">doc/litdown.html</a></li>
+<li><a href="litdown.pdf">doc/litdown.pdf</a></li>
+<li><a href="../index.js">index.js</a></li>
+<li><a href="../lib/backend/commonmark.js">lib/backend/commonmark.js</a></li>
+<li><a href="../lib/backend/markdown-it.js">lib/backend/markdown-it.js</a></li>
+<li><a href="../lib/backend/marked.js">lib/backend/marked.js</a></li>
+<li><a href="../lib/highlight/highlightjs-cdn.js">lib/highlight/highlightjs-cdn.js</a></li>
+<li><a href="../lib/highlight/none.js">lib/highlight/none.js</a></li>
+<li><a href="../lib/litdown.js">lib/litdown.js</a></li>
+<li><a href="../lib/litdown.min.js">lib/litdown.min.js</a></li>
+<li><a href="../litdown.md">litdown.md</a></li>
+<li><a href="../log/litdown.json">log/litdown.json</a></li>
+<li><a href="../Makefile">Makefile</a></li>
+<li><a href="../t/circular1.md">t/circular1.md</a></li>
+<li><a href="../t/circular2.md">t/circular2.md</a></li>
+</ul>
+<h1><a name="figures">Figures</a> <a href="#contents">^</a></h1>
+<h2><a name="logical-diagram">Logical diagram</a> <a href="#contents">^</a></h2>
+<h3><a name="doc-fig-logical-diagram-dot">doc/fig/logical-diagram.dot</a> <a href="#contents">^</a></h3>
+<pre><code class="lang-dot">digraph {
+	node[shape=&quot;box&quot;]
+	subgraph cluster_extract {
+		label=&quot;Extract mode&quot;;
+		fontname=&quot;times bold&quot;;
+		color=black;
+		style=dashed;
+		emd -&gt; eld;
+		eld -&gt; edir;
+		edir -&gt; er;
+		edir -&gt; ehtml;
+		edir -&gt; efiles;
+		emd[label=&quot;Markdown (name.md)&quot;];
+		eld[label=&quot;litdown [-x] name.md&quot;,shape=ellipse,fontname=&quot;times bold&quot;,style=filled];
+		edir[label=&quot;directory (name/)&quot;];
+		er[label=&quot;README.md&quot;];
+		ehtml[label=&quot;HTML (name.html)&quot;];
+		efiles[label=&quot;files (*)&quot;];
+	}
+	subgraph cluster_space {
+		label=&quot;&quot;;
+		color=white;
+		a[label=&quot;&quot;,color=white];
+	}
+	subgraph cluster_create {
+		label=&quot;Create mode&quot;;
+		fontname=&quot;times bold&quot;;
+		color=black;
+		style=dotted;
+		cdir -&gt; cld -&gt; cmd;
+		cdir[label=&quot;directory (name/)&quot;];
+		cld[label=&quot;litdown -c name&quot;,shape=ellipse,fontname=&quot;times bold&quot;,style=filled];
+		cmd[label=&quot;Markdown (name.md)&quot;];
+	}
+}
+</code></pre>
+<h1><a name="references">References</a> <a href="#contents">^</a></h1>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Literate_programming">Literate programming</a></li>
+<li><a href="http://daringfireball.net/projects/markdown/">Markdown</a></li>
+<li><a href="https://nodejs.org">Node.js</a></li>
+<li><a href="http://nodejs.org/api/fs.html">Node.js file system API</a></li>
+<li><a href="http://nodejs.org/api/path.html">Node.js path API</a></li>
+<li><a href="https://www.npmjs.com/packages/commonmark">Commonmark NPM</a></li>
+<li><a href="https://www.npmjs.com/packages/markdown-it">Markdown-it NPM</a></li>
+<li><a href="https://www.npmjs.com/packages/marked">Marked NPM</a></li>
+<li><a href="https://highlightjs.org">highlight.js</a></li>
+<li><a href="http://pandoc.org" title="Pandoc">Pandoc</a></li>
+<li><a href="https://www.npmjs.com/package/uglifyjs" title="UglifyJS">UglifyJS</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Test-driven_development">Test-driven development</a></li>
+<li><a href="https://en.wikipedia.org/wiki/GNU_build_system">GNU build system</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Self-hosting">Self-hosting</a></li>
+</ul>
+<h1><a name="to-do">To do</a> <a href="#contents">^</a></h1>
+<pre><code class="nohighlight">commonmark issue with &amp;aring;!
+images
+	assign figure # in the order seen
+	use alt text as the caption
+	link to the .dot file?
+	how to convert doc/fig/*.dot &gt; *.png via makefile w/o naming each one?
+calculate and output statistics about LOC, languages, etc
+test input
+	test ~, ` code fences and 4 space indents in all backends
+create mode
+	write to a stream?
+	add option to include hidden, and/or specific globs
+test suite?
+highlighters
+	other plugins?
+		highlightjs &lt;&lt;&lt; non-cdn?
+		highlight command line tool
+	line numbers?
+pandoc
+	pdf: internal links, toc?
+	man?
+in browser
+	minify
+	backend plugins?
+	backend modules?
+parsing
+	title? author? date? &lt;&lt;&lt; is there a &quot;standard&quot; way?
+	add references section to bottom?
+		add numbering, footnotes, link to references...?
+multimedia
+	images
+		functions (mathml, tex, latex...)
+		graphs (graphviz, gnuplot...)
+binary files in base64, json, buffer, xxd?
+	2 issues
+		embed binary files in the Markdown source
+		embed generated files and/or archive in an html
+include resolved files, original Markdown, in readme/html...
+compression?
+	litdown -z file.md.gz
+	litdown -cz dir &gt;&gt;&gt; dir.md.gz
+	like tar... z:gzip, Z:compress, j:bzip2, J:lzma
+read stdin / write stdout?
+	cat file.md |litdown -n file -
+	litdown -c dir - &gt;dir.md
+	zcat file.md.gz |litdown -n file -
+	litdown -c dir - |gzip &gt;dir.md.gz
+npm init (package.json)
+	optional dependencies? commonmark, marked, markdown-it, uglify-js
+cli
+	options
+		bundling
+		full documentation: manpage? -d, --doc, --man
+		add a --toc option to control the max level
+	save/use a config file? ~/.litdown
+</code></pre>
+	</body>
+</html>

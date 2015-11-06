@@ -1,0 +1,35 @@
+digraph {
+	node[shape="box"]
+	subgraph cluster_extract {
+		label="Extract mode";
+		fontname="times bold";
+		color=black;
+		style=dashed;
+		emd -> eld;
+		eld -> edir;
+		edir -> er;
+		edir -> ehtml;
+		edir -> efiles;
+		emd[label="Markdown (name.md)"];
+		eld[label="litdown [-x] name.md",shape=ellipse,fontname="times bold",style=filled];
+		edir[label="directory (name/)"];
+		er[label="README.md"];
+		ehtml[label="HTML (name.html)"];
+		efiles[label="files (*)"];
+	}
+	subgraph cluster_space {
+		label="";
+		color=white;
+		a[label="",color=white];
+	}
+	subgraph cluster_create {
+		label="Create mode";
+		fontname="times bold";
+		color=black;
+		style=dotted;
+		cdir -> cld -> cmd;
+		cdir[label="directory (name/)"];
+		cld[label="litdown -c name",shape=ellipse,fontname="times bold",style=filled];
+		cmd[label="Markdown (name.md)"];
+	}
+}
